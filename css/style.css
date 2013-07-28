@@ -1,0 +1,47 @@
+/*
+	 CSS-Tricks Example
+	 by Chris Coyier
+	 http://css-tricks.com
+*/
+
+
+* { margin: 0; padding: 0; }
+body { font: 14px Georgia, serif; }
+
+/* So you can drag around (drawing) in the table without selection color annoyance */
+/* Unfortunately didn't seem to work when applied ONLY to #drawing-table (at least in Firefox) */
+::selection { background: transparent; }
+::-moz-selection { background: transparent; }
+
+h1 { font: bold 32px Helvetica, Arial, Sans-Serif; letter-spacing: -1px; margin: 0 0 5px 0; }
+#page-wrap > p { margin: 0 0 10px 0; }
+
+#page-wrap { width: 960px; margin: 60px auto; }
+
+#drawing-table { width: 500px; height: 500px; border-collapse: collapse; }
+#drawing-table td { border: 1px dotted #ccc; }
+
+#controls { width: 400px; float: right; }
+#controls fieldset { padding: 20px; border: 1px solid #ccc; margin: 0 0 20px 0; }
+#controls legend { border: 1px solid #ccc; background: white; padding: 2px 8px; }
+
+#gridSize { margin: 0 0 10px 0; }
+
+#color-selector p { clear: both; }
+
+.color { float: left; position: relative;  border: 3px solid #ccc; margin: 0 20px 40px 0; width: 50px; height: 50px; -moz-border-radius: 30px; -webkit-border-radius: 30px; border-radius: 30px; }
+.red { background: red; }
+.green { background: green; }
+.blue { background: blue; }
+.color input { position: absolute; top: 60px; left: 20px; width: 14px; height: 14px; background: url(../images/colordot.png) no-repeat; border: 0; }
+.colorpicker_submit { color: white; }
+.colorpicker { z-index: 20; }
+
+.selected { border: 3px solid black; }
+
+#table-wrap { position: relative; width: 500px; }
+#table-wrap table { position: relative; z-index: 10; }
+
+#toggle-tracing-mode { display: none; }
+
+#html-wrap textarea { width: 100%; height: 50px; overflow: auto; margin: 0 0 10px 0; }

@@ -1,0 +1,50 @@
+<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>game of life</title>
+	
+	<link rel='stylesheet' href='css/style.css' />
+	
+	<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+	<script type='text/javascript' src='js/drawingtable.js'></script>
+	<script type='text/javascript' src='js/gol.js'></script>
+</head>
+<body>
+<div id="page-wrap">
+		<div id="controls">
+			<fieldset id="grid-size-wrap">
+				<legend>Grid Controls</legend>						
+				<select id="gridSize">
+					<option value="5,5" selected>5 x 5</option>
+					<option value="10,10">10 x 10</option>
+					<option value="20,20" >20 x 20</option>
+				</select>
+				<br />
+				Changing size clears the design
+			</fieldset>
+			<fieldset id="controls-wrap">
+				<legend>Controls</legend>
+				<button id="start">Start</button>
+				<button id="stop">Pause</button>
+				<button id="clear">Clear</button>
+
+
+			</fieldset>
+			<fieldset id="information-wrap">
+				<legend>Running Information</legend>
+				Generation: <a id="generation">0</a> | Live cells: <a id="liveCells">0</a>
+
+			</fieldset>
+		</div>
+		<div id="table-wrap">
+			<table id="drawing-table">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+	
+	</div>
+	</body>
+	</html>
