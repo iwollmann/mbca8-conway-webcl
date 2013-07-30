@@ -32,7 +32,7 @@ __kernel void clGol(__global unsigned int* vectorIn, __global unsigned int* vect
 	//TOP LEFT
 	if((index-vectorWidth)-1 >= 0 && (index-vectorWidth)-1 <= vectorSize){
 		targetX = floor((float)((index-vectorWidth-1)/vectorWidth));
-		targetY = (index-vectorWidth-1) - (x * vectorWidth);
+		targetY = (index-vectorWidth-1) - (targetX * vectorWidth);
 		if ((targetX < x && targetY < y) && vectorIn[(index-vectorWidth)-1] == 1){
 			liveCells ++;
 		}
@@ -41,7 +41,7 @@ __kernel void clGol(__global unsigned int* vectorIn, __global unsigned int* vect
 	//TOP RIGHT
 	if((index-vectorWidth)+1 >= 0 && (index-vectorWidth)+1 <= vectorSize){
 		targetX = floor((float)((index-vectorWidth+1)/vectorWidth));
-		targetY = (index-vectorWidth+1) - (x * vectorWidth);
+		targetY = (index-vectorWidth+1) - (targetX * vectorWidth);
 		if ((targetX < x && targetY > y) && vectorIn[(index-vectorWidth)+1] == 1){
 			liveCells ++;
 		}
@@ -70,7 +70,7 @@ __kernel void clGol(__global unsigned int* vectorIn, __global unsigned int* vect
 	//BOTTOM LEFT
 	if((index+vectorWidth)-1 >= 0 && (index+vectorWidth)-1 <= vectorSize){
 		targetX = floor((float)(((index+vectorWidth)-1)/vectorWidth));
-		targetY = ((index+vectorWidth)-1) - (x * vectorWidth);
+		targetY = ((index+vectorWidth)-1) - (targetX * vectorWidth);
 		if ((targetX > x && targetY < y) && vectorIn[(index+vectorWidth)-1] == 1){
 			liveCells ++;
 		}
@@ -79,7 +79,7 @@ __kernel void clGol(__global unsigned int* vectorIn, __global unsigned int* vect
 	//BOTTOM RIGHT
 	if((index+vectorWidth)+1 >= 0 && (index+vectorWidth)+1 <= vectorSize){
 		targetX = floor((float)(((index+vectorWidth)+1)/vectorWidth));
-		targetY = ((index+vectorWidth)+1) - (x * vectorWidth);
+		targetY = ((index+vectorWidth)+1) - (targetX * vectorWidth);
 		if ((targetX > x && targetY > y) && vectorIn[(index+vectorWidth)+1] == 1){
 			liveCells ++;
 		}
