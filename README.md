@@ -29,6 +29,6 @@ http://webcl.nokiaresearch.com/index.html
 Exemplos
 =================
 Implementação sem o WebCL: www.codinginsideout.com.br/samples/conway/no-webcl.html
-Implementação com o WebCL: (Em desenvolvimento)
+Implementação com o WebCL: www.codinginsideout.com.br/samples/conway/webcl.html (link offline)
 
 Créditos para a montagem do grid: http://css-tricks.com/drawing-table
