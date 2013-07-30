@@ -9,6 +9,17 @@
 	<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
 	<script type='text/javascript' src='js/drawingtable.js'></script>
 	<script type='text/javascript' src='js/gol.js'></script>
+	<script type='text/javascript'>		
+		$("#drawing-table").ready(function(){
+			$("#start").click(function() {
+				document.world.start();
+			});
+			
+			$("#stop").click(function() {
+				document.world.stop();
+			});
+		});
+	</script>
 </head>
 <body>
 <div id="page-wrap">

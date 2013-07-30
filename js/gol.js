@@ -1,3 +1,17 @@
+function loadKernel(id){
+	var kernelElement = document.getElementById(id);
+	var kernelSource = kernelElement.text;
+	
+	if (kernelElement.src != "") {
+		var mHttpReq = new XMLHttpRequest();
+		mHttpReq.open("GET", kernelElement.src, false);
+		mHttpReq.send(null);
+		kernelSource = mHttpReq.responseText;
+	}
+	
+	return kernelSource;
+}
+
 Array.prototype.each = function(callback) {
   var i = 0;
   while (i < this.length) {
@@ -14,12 +28,12 @@ function World(width, heigth) {
   this.running=false;
   this.intervalId =0;
   
-  var size =width * heigth;
+  this.size =width * heigth;
   var i = 0;
   var x, y;
 
   this.cells = [];
-  while(i < size) {
+  while(i < this.size) {
     x = Math.floor(i / width);
     y = i - (x * width);
     this.cells.push(new Cell(this,x,y,i));
@@ -39,6 +53,16 @@ World.prototype.start = function(){
 	var self = this;
 	this.intervalId = setInterval(function() { 
 		self.run(); 
+		},1000);
+}
+
+World.prototype.startParallel = function(){
+	this.generation=0;
+	this.running = true;
+	
+	var self = this;
+	this.intervalId = setInterval(function() { 
+		self.runInParallel(); 
 		},1000);
 }
 
@@ -79,6 +103,91 @@ World.prototype.run = function(){
 		this.build();
 	//}
 	//clearInterval(intervalId);
+}
+
+World.prototype.runInParallel = function(){
+
+	try {
+		// First check if the WebCL extension is installed at all
+		if (window.WebCL == undefined) {
+			alert("Unfortunately your system does not support WebCL. " +
+			"Make sure that you have both the OpenCL driver " +
+			"and the WebCL browser extension installed.");
+			return false;
+		}
+		
+		var vectorIn = new Uint32Array(this.size);
+		for ( var i=0; i<this.size; i++) {
+			vectorIn[i] = this.cells[i].isDead() ? 0:1;
+		}
+		
+		// Setup WebCL context using the default device of the first available platform
+		var platforms = WebCL.getPlatformIDs();
+		var ctx = WebCL.createContextFromType ([WebCL.CL_CONTEXT_PLATFORM, platforms[0]],
+		WebCL.CL_DEVICE_TYPE_DEFAULT);
+		
+		// Reserve buffers
+		var bufSize = this.size * 4; // size in bytes
+		var bufIn = ctx.createBuffer (WebCL.CL_MEM_READ_ONLY, bufSize);
+		var bufOut = ctx.createBuffer (WebCL.CL_MEM_WRITE_ONLY, bufSize);
+		
+		// Create and build program for the first device
+		var kernelSrc = loadKernel("clgameOfLife");
+		var program = ctx.createProgramWithSource(kernelSrc);
+		var devices = ctx.getContextInfo(WebCL.CL_CONTEXT_DEVICES);
+		try {
+			program.buildProgram ([devices[0]], "");
+		} catch(e) {
+			alert ("Failed to build WebCL program. Error "
+			+ program.getProgramBuildInfo (devices[0], WebCL.CL_PROGRAM_BUILD_STATUS)
+			+ ": " + program.getProgramBuildInfo (devices[0], WebCL.CL_PROGRAM_BUILD_LOG));
+		throw e;
+		}
+		
+		// Create kernel and set arguments
+		var kernel = program.createKernel ("clGol");
+		kernel.setKernelArg (0, bufIn);
+		kernel.setKernelArg (1, bufOut);
+		kernel.setKernelArg (2, this.width, WebCL.types.UINT);
+		kernel.setKernelArg (3, this.size, WebCL.types.UINT);
+		
+		// Create command queue using the first available device
+		var cmdQueue = ctx.createCommandQueue (devices[0], 0);
+		
+		// Write the buffer to OpenCL device memory
+		cmdQueue.enqueueWriteBuffer (bufIn, false, 0, bufSize, vectorIn, []);
+		
+		// Init ND-range
+		var localWS = [8];
+		var globalWS = [Math.ceil (this.size / localWS) * localWS];
+		
+		// Execute (enqueue) kernel
+		cmdQueue.enqueueNDRangeKernel(kernel, globalWS.length, [], globalWS, localWS, []);
+		
+		// Read the result buffer from OpenCL device
+		outBuffer = new Uint32Array(this.size);
+		cmdQueue.enqueueReadBuffer (bufOut, false, 0, bufSize, outBuffer, []);
+		cmdQueue.finish (); //Finish all the operations
+		
+		for ( var i=0; i<this.size; i++) {
+			if (outBuffer[i] != vectorIn[i]){
+				this.cells[i].toggle();
+			}
+		}
+	}
+	catch(e) {
+		alert("ERROR:" + e.message);
+		//throw e;
+	}
+		//var affectedCells =[];
+		
+		this.generation++;
+
+		/*affectedCells.each(function(cell){
+			cell.toggle();
+		});*/
+		
+	this.build();
 }
 
 function Cell(world, x,y,index) {
@@ -163,12 +272,3 @@ Cell.prototype.toggle = function() {
   return this.dead;
 }
 
-$("#drawing-table").ready(function(){
-	$("#start").click(function() {
-		document.world.start();
-	});
-	
-	$("#stop").click(function() {
-		document.world.stop();
-	});
-});
